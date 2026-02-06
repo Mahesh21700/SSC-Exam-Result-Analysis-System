@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC Exam Result Analysis Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lora:wght@400;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/papaparse/5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo" onclick="navigateTo('home')" style="cursor: pointer;">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>SSC Portal</span>
+                </div>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#home" onclick="navigateTo('home')">Home</a></li>
+                    <li><a href="#survey" onclick="navigateTo('survey')">Exam Survey</a></li>
+                    <li><a href="#requirements" onclick="navigateTo('requirements')">Requirements</a></li>
+                    <li><a href="#papers" onclick="navigateTo('papers')">Previous Papers</a></li>
+                    <li id="loginNav"><a href="#" onclick="showLogin()">Login</a></li>
+                    <li id="dashboardNav" style="display:none;"><a href="#" onclick="navigateTo('dashboard')">Dashboard</a></li>
+                    <li id="logoutNav" style="display:none;"><a href="#" onclick="logout()">Logout</a></li>
+                </ul>
+                <button class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div id="appContainer">
+        <!-- HOME PAGE -->
+        <section id="home" class="page active">
+            <!-- Hero Section -->
+            <div class="hero">
+                <div class="hero-content">
+                    <div class="badge">Official Portal</div>
+                    <h1>SSC Exam Result Analysis System</h1>
+                    <p>Comprehensive analysis and insights for Staff Selection Commission examinations</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" onclick="showLogin()">Login to Dashboard</button>
+                        <button class="btn btn-secondary" onclick="navigateTo('survey')">View Results</button>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="animated-box"></div>
+                </div>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="container">
+                <section class="stats-section">
+                    <h2>Platform Statistics</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-users"></i></div>
+                            <div class="stat-content">
+                                <h3 id="totalStudents">50000+</h3>
+                                <p>Student Data</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-book"></i></div>
+                            <div class="stat-content">
+                                <h3>10+</h3>
+                                <p>Active Exams</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                            <div class="stat-content">
+                                <h3 id="passPercentage">2%</h3>
+                                <p>Pass Percentage</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-calendar"></i></div>
+                            <div class="stat-content">
+                                <h3>2020-25</h3>
+                                <p>Active Years</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Features Section -->
+                <section class="features-section">
+                    <h2>Key Features</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Secure Login</h3>
+                            <p>Role-based access for Admin, Operators, and Students</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-search"></i>
+                            <h3>Advanced Search</h3>
+                            <p>Find results by Roll Number, Name, and Rank</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-chart-bar"></i>
+                            <h3>Analytics</h3>
+                            <p>Comprehensive exam statistics and performance analysis</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-file-download"></i>
+                            <h3>Export Data</h3>
+                            <p>Download results as PDF, Excel, or CSV formats</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-book-open"></i>
+                            <h3>Study Materials</h3>
+                            <p>Access previous year question papers</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-mobile-alt"></i>
+                            <h3>Responsive</h3>
+                            <p>Fully accessible on mobile, tablet, and desktop</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <!-- LOGIN PAGE (Reworked) -->
+        <section id="login" class="page modal-page">
+            <div class="modal-overlay" onclick="closeLogin()"></div>
+            <div class="auth-modal">
+                <button class="auth-close" onclick="closeLogin()"><i class="fas fa-times"></i></button>
+
+                <div class="auth-header">
+                    <h2 id="authTitle">Account Access</h2>
+                    <p id="authSubtitle">Login or create a new account</p>
+                </div>
+
+                <div class="auth-switch">
+                    <button id="authTabSignIn" class="auth-tab active" onclick="showLoginForm()">Login</button>
+                    <button id="authTabSignUp" class="auth-tab" onclick="showSignUpForm()">Sign Up</button>
+                </div>
+
+                <div class="auth-body">
+                    <!-- SIGN IN CONTENT -->
+                    <div id="authSignIn" class="auth-panel">
+                        <div class="role-switch">
+                            <button class="role-btn active" onclick="switchLoginMode('admin')"><i class="fas fa-user-shield"></i> Admin</button>
+                            <button class="role-btn" onclick="switchLoginMode('operator')"><i class="fas fa-user-tie"></i> Operator</button>
+                            <button class="role-btn" onclick="switchLoginMode('student')"><i class="fas fa-user-graduate"></i> Student</button>
+                        </div>
+
+                        <form id="adminLoginForm" class="auth-form" onsubmit="adminLogin(event)">
+                            <input type="text" id="adminUsername" placeholder="Username" required>
+                            <div class="pwd-row"><input type="password" id="adminPassword" placeholder="Password" required><i class="fas fa-eye toggle-pwd" onclick="togglePassword('adminPassword')"></i></div>
+                            <button type="submit" class="btn btn-primary">Login as Admin</button>
+                        </form>
+
+                        <form id="operatorLoginForm" class="auth-form" onsubmit="operatorLogin(event)" style="display:none;">
+                            <input type="text" id="operatorUsername" placeholder="Username" required>
+                            <div class="pwd-row"><input type="password" id="operatorPassword" placeholder="Password" required><i class="fas fa-eye toggle-pwd" onclick="togglePassword('operatorPassword')"></i></div>
+                            <button type="submit" class="btn btn-primary">Login as Operator</button>
+                        </form>
+
+                        <form id="studentLoginForm" class="auth-form" onsubmit="studentLogin(event)" style="display:none;">
+                            <input type="text" id="studentRoll" placeholder="Roll Number" required>
+                            <div class="pwd-row"><input type="password" id="studentPassword" placeholder="Password" required><i class="fas fa-eye toggle-pwd" onclick="togglePassword('studentPassword')"></i></div>
+                            <button type="submit" class="btn btn-primary">Login as Student</button>
+                        </form>
+
+                        <div class="auth-footer">
+                            <a href="#" onclick="showForgotPassword()">Forgot Password?</a>
+                        </div>
+                    </div>
+
+                    <!-- SIGN UP CONTENT -->
+                    <div id="authSignUp" class="auth-panel" style="display:none;">
+                        <form id="studentSignUpForm" class="auth-form" onsubmit="studentSignUp(event)">
+                            <input type="text" id="signupName" placeholder="Full Name" required>
+                            <input type="email" id="signupEmail" placeholder="Email" required>
+                            <input type="tel" id="signupPhone" placeholder="Phone Number" required>
+                            <div class="pwd-row"><input type="password" id="signupPassword" placeholder="Password" required><i class="fas fa-eye toggle-pwd" onclick="togglePassword('signupPassword')"></i></div>
+                            <div class="pwd-row"><input type="password" id="signupConfirm" placeholder="Confirm Password" required><i class="fas fa-eye toggle-pwd" onclick="togglePassword('signupConfirm')"></i></div>
+                            <button type="submit" class="btn btn-success">Create Student Account</button>
+                        </form>
+                        <div class="auth-footer">
+                            <p class="muted">By creating an account you agree to our terms.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="auth-social">
+                    <span>or continue with</span>
+                    <div class="social-buttons">
+                        <button class="social-btn google"><i class="fab fa-google"></i></button>
+                        <button class="social-btn github"><i class="fab fa-github"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SSC EXAM SURVEY PAGE -->
+        <section id="survey" class="page">
+            <div class="container">
+                <h1>SSC Exam Survey Dashboard</h1>
+                <p class="section-subtitle">Analyze SSC exam results with advanced filtering and search</p>
+
+                <!-- Filters Section -->
+                <div class="filters-section">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label>Select Exam</label>
+                            <select id="examSelect" onchange="loadSurveyData()">
+                                <option value="">-- Select Exam --</option>
+                                <option value="SSC CGL">SSC CGL</option>
+                                <option value="SSC CHSL">SSC CHSL</option>
+                                <option value="SSC GD">SSC GD</option>
+                                <option value="SSC JE">SSC JE</option>
+                                <option value="SSC Stenographer">SSC Stenographer</option>
+                                <option value="SSC CPO">SSC CPO</option>
+                                <option value="SSC MTS">SSC MTS</option>
+                                <option value="SSC Constable">SSC Constable</option>
+                                <option value="SSC DEO">SSC DEO</option>
+                                <option value="SSC Scientific">SSC Scientific Assistant</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Select Year</label>
+                            <select id="yearSelect" onchange="loadSurveyData()">
+                                <option value="">-- Select Year --</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" onclick="resetFilters()">Reset Filters</button>
+                    </div>
+
+                    <!-- Statistics Cards -->
+                    <div id="statsCards" class="stats-cards" style="display:none;">
+                        <div class="stat-info">
+                            <h4>Total Posts</h4>
+                            <p id="totalPosts">0</p>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Total Applications</h4>
+                            <p id="totalApplications">0</p>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Total Attempts</h4>
+                            <p id="totalAttempts">0</p>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Tier-1 Passed</h4>
+                            <p id="tier1Passed">0</p>
+                        </div>
+                        <div class="stat-info">
+                            <h4>Tier-2 Passed</h4>
+                            <p id="tier2Passed">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search and Advanced Filters -->
+                <div class="advanced-filters">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search by Roll Number or Name..." id="searchInput" onkeyup="applyFilters()">
+                    </div>
+
+                    <div class="filter-options">
+                        <select id="resultFilter" onchange="applyFilters()">
+                            <option value="">All Results</option>
+                            <option value="Tier-1 Pass">Tier-1 Pass</option>
+                            <option value="Tier-2 Pass">Tier-2 Pass</option>
+                            <option value="Selected">Selected</option>
+                            <option value="Failed">Failed</option>
+                        </select>
+
+                        <select id="rankFilter" onchange="applyFilters()">
+                            <option value="">All Ranks</option>
+                            <option value="top10">Top 10</option>
+                            <option value="top50">Top 50</option>
+                            <option value="top100">Top 100</option>
+                            <option value="top500">Top 500</option>
+                        </select>
+
+                        <select id="categoryFilter" onchange="applyFilters()">
+                            <option value="">All Categories</option>
+                            <option value="General">General</option>
+                            <option value="OBC">OBC</option>
+                            <option value="SC">SC</option>
+                            <option value="ST">ST</option>
+                            <option value="EWS">EWS</option>
+                        </select>
+
+                        <button class="btn btn-success" onclick="exportTable('excel')"><i class="fas fa-file-excel"></i> Excel</button>
+                        <button class="btn btn-info" onclick="exportTable('pdf')"><i class="fas fa-file-pdf"></i> PDF</button>
+                    </div>
+                </div>
+
+                <!-- Results Table -->
+                <div class="table-container">
+                    <table id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable(0)">Roll Number <i class="fas fa-sort"></i></th>
+                                <th onclick="sortTable(1)">Name <i class="fas fa-sort"></i></th>
+                                <th onclick="sortTable(2)">Category <i class="fas fa-sort"></i></th>
+                                <th onclick="sortTable(3)">Total Marks <i class="fas fa-sort"></i></th>
+                                <th onclick="sortTable(4)">Rank <i class="fas fa-sort"></i></th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
+                    <p id="noData" class="no-data">Select exam and year to view results</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SSC REQUIREMENTS PAGE -->
+        <section id="requirements" class="page">
+            <div class="container">
+                <h1>SSC Exam Requirements</h1>
+                <p class="section-subtitle">Detailed eligibility criteria for all SSC exams</p>
+
+                <div class="requirements-grid">
+                    <!-- CGL Card -->
+                    <div class="requirement-card">
+                        <div class="card-header">
+                            <i class="fas fa-book"></i>
+                            <h3>SSC CGL</h3>
+                        </div>
+                        <p class="card-desc">Combined Graduate Level Examination</p>
+                        <button class="btn btn-small" onclick="showRequirementModal('CGL')">See More</button>
+                    </div>
+
+                    <!-- CHSL Card -->
+                    <div class="requirement-card">
+                        <div class="card-header">
+                            <i class="fas fa-graduation-cap"></i>
+                            <h3>SSC CHSL</h3>
+                        </div>
+                        <p class="card-desc">Combined Higher Secondary Level</p>
+                        <button class="btn btn-small" onclick="showRequirementModal('CHSL')">See More</button>
+                    </div>
+
+                    <!-- GD Card -->
+                    <div class="requirement-card">
+                        <div class="card-header">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>SSC GD</h3>
+                        </div>
+                        <p class="card-desc">General Duty (Constable)</p>
+                        <button class="btn btn-small" onclick="showRequirementModal('GD')">See More</button>
+                    </div>
+
+                    <!-- JE Card -->
+                    <div class="requirement-card">
+                        <div class="card-header">
+                            <i class="fas fa-wrench"></i>
+                            <h3>SSC JE</h3>
+                        </div>
+                        <p class="card-desc">Junior Engineer</p>
+                        <button class="btn btn-small" onclick="showRequirementModal('JE')">See More</button>
+                    </div>
+
+                    <!-- STENO Card -->
+                    <div class="requirement-card">
+                        <div class="card-header">
+                            <i class="fas fa-keyboard"></i>
+                            <h3>SSC Stenographer</h3>
+                        </div>
+                        <p class="card-desc">Grade C & D Positions</p>
+                        <button class="btn btn-small" onclick="showRequirementModal('STENO')">See More</button>
+                    </div>
+
+                    <!-- CPO Card -->
+                    <div class="requirement-card">
+                        <div class="card-header">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>SSC CPO</h3>
+                        </div>
+                        <p class="card-desc">Central Police Organization</p>
+                        <button class="btn btn-small" onclick="showRequirementModal('CPO')">See More</button>
+                    </div>
+
+                    <!-- MTS Card -->
+                    <div class="requirement-card">
+                        <div class="card-header">
+                            <i class="fas fa-briefcase"></i>
+                            <h3>SSC MTS</h3>
+                        </div>
+                        <p class="card-desc">Multi Tasking Staff</p>
+                        <button class="btn btn-small" onclick="showRequirementModal('MTS')">See More</button>
+                    </div>
+
+                    <!-- CONSTABLE Card -->
+                    <div class="requirement-card">
+                        <div class="card-header">
+                            <i class="fas fa-user-secret"></i>
+                            <h3>SSC Constable</h3>
+                        </div>
+                        <p class="card-desc">BSF/CRPF/ITBP/SSB</p>
+                        <button class="btn btn-small" onclick="showRequirementModal('CONSTABLE')">See More</button>
+                    </div>
+
+                    <!-- DEO Card -->
+                    <div class="requirement-card">
+                        <div class="card-header">
+                            <i class="fas fa-laptop"></i>
+                            <h3>SSC DEO</h3>
+                        </div>
+                        <p class="card-desc">Data Entry Operator</p>
+                        <button class="btn btn-small" onclick="showRequirementModal('DEO')">See More</button>
+                    </div>
+
+                    <!-- SCIENTIFIC ASSISTANT Card -->
+                    <div class="requirement-card">
+                        <div class="card-header">
+                            <i class="fas fa-flask"></i>
+                            <h3>SSC Scientific</h3>
+                        </div>
+                        <p class="card-desc">Scientific Assistant</p>
+                        <button class="btn btn-small" onclick="showRequirementModal('SCIENTIFIC')">See More</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- REQUIREMENTS MODAL -->
+        <div id="requirementModal" class="modal">
+            <div class="modal-overlay" onclick="closeRequirementModal()"></div>
+            <div class="modal-content">
+                <button class="close-btn" onclick="closeRequirementModal()"><i class="fas fa-times"></i></button>
+                <div id="modalBody"></div>
+            </div>
+        </div>
+
+        <!-- PREVIOUS PAPERS PAGE -->
+        <section id="papers" class="page">
+            <div class="container">
+                <h1>Previous Year Papers</h1>
+                <p class="section-subtitle">Download question papers for exam preparation</p>
+
+                <div class="papers-filter">
+                    <select id="papersExamSelect" onchange="filterPapers()">
+                        <option value="">All Exams</option>
+                        <option value="CGL">SSC CGL</option>
+                        <option value="CHSL">SSC CHSL</option>
+                        <option value="GD">SSC GD</option>
+                        <option value="JE">SSC JE</option>
+                        <option value="Stenographer">SSC Stenographer</option>
+                        <option value="MTS">SSC MTS</option>
+                        <option value="CPO">SSC CPO</option>
+                        <option value="DEO">SSC DEO</option>
+                        <option value="Constable">SSC Constable</option>
+                        <option value="Scientific">SSC Scientific</option>
+                    </select>
+                    <select id="papersYearSelect" onchange="filterPapers()">
+                        <option value="">All Years</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                    </select>
+                </div>
+
+                <div class="papers-grid" id="papersGrid">
+                </div>
+            </div>
+        </section>
+
+        <!-- STUDENT DASHBOARD -->
+        <section id="dashboard" class="page">
+            <div class="container">
+                <!-- Dashboard Header -->
+                <div class="dashboard-header">
+                    <h1>Student Dashboard</h1>
+                    <div class="user-info">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="userName">Student</span>
+                    </div>
+                </div>
+
+                <!-- Basic Details -->
+                <div class="card">
+                    <h3>Personal Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Student Name</label>
+                            <p id="displayName">-</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Roll Number</label>
+                            <p id="displayRoll">-</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Exam Name</label>
+                            <p id="displayExam">-</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Category</label>
+                            <p id="displayCategory">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exam Selection (if multiple) -->
+                <div id="examSelectionCard" class="card" style="display:none;">
+                    <h3>Select Exam</h3>
+                    <select id="studentExamSelect" onchange="loadStudentResults()">
+                        <option value="">-- Select Exam --</option>
+                    </select>
+                </div>
+
+                <!-- Tier-1 Results -->
+                <div class="card">
+                    <h3>Tier-1 Results (Subject-wise Marks)</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Total Marks</th>
+                                    <th>Obtained Marks</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tier1Body">
+                                <tr><td colspan="4" class="no-data">No data available</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tier-2 Results -->
+                <div class="card">
+                    <h3>Tier-2 Results (Paper-wise Marks)</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Paper</th>
+                                    <th>Subject</th>
+                                    <th>Total Marks</th>
+                                    <th>Obtained Marks</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tier2Body">
+                                <tr><td colspan="5" class="no-data">No data available</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Final Result Summary -->
+                <div class="card">
+                    <h3>Final Result Summary</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <label>Tier-1 Status</label>
+                            <p id="finalTier1Status">-</p>
+                        </div>
+                        <div class="summary-item">
+                            <label>Tier-2 Status</label>
+                            <p id="finalTier2Status">-</p>
+                        </div>
+                        <div class="summary-item">
+                            <label>Document Verification</label>
+                            <p id="finalDocStatus">-</p>
+                        </div>
+                        <div class="summary-item">
+                            <label>Final Selection</label>
+                            <p id="finalSelection">-</p>
+                        </div>
+                        <div class="summary-item">
+                            <label>Allotted Post</label>
+                            <p id="finalPost">-</p>
+                        </div>
+                        <div class="summary-item">
+                            <label>Department</label>
+                            <p id="finalDepartment">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Download Options -->
+                <div class="download-section">
+                    <button class="btn btn-primary" onclick="downloadScorecard()"><i class="fas fa-download"></i> Download Scorecard (PDF)</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ADMIN DASHBOARD -->
+        <section id="adminDashboard" class="page">
+            <div class="admin-layout">
+                <!-- Sidebar -->
+                <aside class="admin-sidebar">
+                    <div class="sidebar-header">
+                        <h3>Admin Menu</h3>
+                    </div>
+                    <ul class="admin-menu">
+                        <li><a href="#" onclick="switchAdminTab('overview')" class="menu-item active"><i class="fas fa-chart-line"></i> Overview</a></li>
+                        <li><a href="#" onclick="switchAdminTab('students')" class="menu-item"><i class="fas fa-users"></i> Student Management</a></li>
+                        <li><a href="#" onclick="switchAdminTab('exams')" class="menu-item"><i class="fas fa-book"></i> Exam Management</a></li>
+                        <li><a href="#" onclick="switchAdminTab('results')" class="menu-item"><i class="fas fa-file-alt"></i> Result Management</a></li>
+                        <li><a href="#" onclick="switchAdminTab('analytics')" class="menu-item"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+                        <li><a href="#" onclick="switchAdminTab('operators')" class="menu-item"><i class="fas fa-user-tie"></i> Operators</a></li>
+                        <li><a href="#" onclick="switchAdminTab('feedback')" class="menu-item"><i class="fas fa-comments"></i> Feedback</a></li>
+                        <li><a href="#" onclick="switchAdminTab('settings')" class="menu-item"><i class="fas fa-cog"></i> Settings</a></li>
+                    </ul>
+                </aside>
+
+                <!-- Main Content -->
+                <div class="admin-content">
+                    <!-- Overview Tab -->
+                    <div id="overviewTab" class="admin-tab active">
+                        <h2>Dashboard Overview</h2>
+                        <div class="stats-grid">
+                            <div class="stat-card-admin">
+                                <h4>Total Students</h4>
+                                <p id="adminTotalStudents">0</p>
+                            </div>
+                            <div class="stat-card-admin">
+                                <h4>Total Exams</h4>
+                                <p>4</p>
+                            </div>
+                            <div class="stat-card-admin">
+                                <h4>Active Years</h4>
+                                <p>6</p>
+                            </div>
+                            <div class="stat-card-admin">
+                                <h4>Pass Percentage</h4>
+                                <p id="adminPassPercentage">0%</p>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="overviewChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Student Management Tab -->
+                    <div id="studentsTab" class="admin-tab">
+                        <h2>Student Management</h2>
+                        <div class="admin-actions">
+                            <button class="btn btn-primary" onclick="showAddStudentForm()"><i class="fas fa-plus"></i> Add New Student</button>
+                            <button class="btn btn-secondary" onclick="triggerFileUpload()"><i class="fas fa-upload"></i> Import CSV</button>
+                            <button class="btn btn-info" onclick="exportAllStudents()"><i class="fas fa-download"></i> Export All</button>
+                        </div>
+
+                        <div id="addStudentForm" class="form-container" style="display:none;">
+                            <h3>Add New Student</h3>
+                            <form onsubmit="saveNewStudent(event)">
+                                <div class="form-row">
+                                    <input type="text" placeholder="Roll Number" id="newRoll" required>
+                                    <input type="text" placeholder="Full Name" id="newName" required>
+                                </div>
+                                <div class="form-row">
+                                    <input type="email" placeholder="Email" id="newEmail" required>
+                                    <input type="tel" placeholder="Phone" id="newPhone" required>
+                                </div>
+                                <div class="form-row">
+                                    <select id="newCategory" required>
+                                        <option value="">Select Category</option>
+                                        <option value="General">General</option>
+                                        <option value="OBC">OBC</option>
+                                        <option value="SC">SC</option>
+                                        <option value="ST">ST</option>
+                                        <option value="EWS">EWS</option>
+                                    </select>
+                                    <select id="newExam" required>
+                                        <option value="">Select Exam</option>
+                                        <option value="SSC CGL">SSC CGL</option>
+                                        <option value="SSC CHSL">SSC CHSL</option>
+                                        <option value="SSC GD">SSC GD</option>
+                                        <option value="SSC JE">SSC JE</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Student</button>
+                                <button type="button" class="btn btn-secondary" onclick="cancelAddStudent()">Cancel</button>
+                            </form>
+                        </div>
+
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Roll Number</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Category</th>
+                                        <th>Exam</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="studentsTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <input type="file" id="csvFile" accept=".csv" style="display:none;" onchange="handleCSVUpload(event)">
+                    </div>
+
+                    <!-- Exam Management Tab -->
+                    <div id="examsTab" class="admin-tab">
+                        <h2>Exam & Year Management</h2>
+                        <div class="admin-actions">
+                            <button class="btn btn-primary" onclick="showAddExamForm()"><i class="fas fa-plus"></i> Add New Exam</button>
+                        </div>
+                        <div id="examManagementContainer"></div>
+                    </div>
+
+                    <!-- Add Exam Modal -->
+                    <div id="addExamModal" class="modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3>Add New Exam</h3>
+                                <span class="close" onclick="closeAddExamModal()">&times;</span>
+                            </div>
+                            <form id="addExamForm" onsubmit="saveNewExam(event)">
+                                <div class="form-group">
+                                    <label for="newExamName">Exam Name *</label>
+                                    <input type="text" id="newExamName" required placeholder="e.g., SSC CGL, SSC CHSL">
+                                </div>
+                                <div class="form-group">
+                                    <label for="newExamYear">Year *</label>
+                                    <input type="number" id="newExamYear" required placeholder="e.g., 2024">
+                                </div>
+                                <div class="form-group">
+                                    <label for="newTotalPosts">Total Posts *</label>
+                                    <input type="text" id="newTotalPosts" required placeholder="e.g., 1000 or 1000+">
+                                </div>
+                                <div class="form-group">
+                                    <label for="newTotalApplications">Total Applications *</label>
+                                    <input type="text" id="newTotalApplications" required placeholder="e.g., 500000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="newTotalAttempts">Total Attempts *</label>
+                                    <input type="text" id="newTotalAttempts" required placeholder="e.g., 450000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="newTier1Passed">Tier-1 Passed *</label>
+                                    <input type="text" id="newTier1Passed" required placeholder="e.g., 100000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="newTier2Passed">Tier-2 Passed *</label>
+                                    <input type="text" id="newTier2Passed" required placeholder="e.g., 5000">
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Exam</button>
+                                    <button type="button" class="btn btn-secondary" onclick="closeAddExamModal()"><i class="fas fa-times"></i> Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Add Year Modal -->
+                    <div id="addYearModal" class="modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3>Add New Year Data</h3>
+                                <span class="close" onclick="closeAddYearModal()">&times;</span>
+                            </div>
+                            <form id="addYearForm" onsubmit="saveNewYear(event)">
+                                <div class="form-group">
+                                    <label for="addYearExamName">Exam Name *</label>
+                                    <input type="text" id="addYearExamName" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="addYear">Year *</label>
+                                    <input type="number" id="addYear" required placeholder="e.g., 2024">
+                                </div>
+                                <div class="form-group">
+                                    <label for="addTotalPosts">Total Posts *</label>
+                                    <input type="text" id="addTotalPosts" required placeholder="e.g., 1000 or 1000+">
+                                </div>
+                                <div class="form-group">
+                                    <label for="addTotalApplications">Total Applications *</label>
+                                    <input type="text" id="addTotalApplications" required placeholder="e.g., 500000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="addTotalAttempts">Total Attempts *</label>
+                                    <input type="text" id="addTotalAttempts" required placeholder="e.g., 450000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="addTier1Passed">Tier-1 Passed *</label>
+                                    <input type="text" id="addTier1Passed" required placeholder="e.g., 100000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="addTier2Passed">Tier-2 Passed *</label>
+                                    <input type="text" id="addTier2Passed" required placeholder="e.g., 5000">
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Year Data</button>
+                                    <button type="button" class="btn btn-secondary" onclick="closeAddYearModal()"><i class="fas fa-times"></i> Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Modal -->
+                    <div id="feedbackModal" class="modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3>Send Feedback</h3>
+                                <span class="close" onclick="closeFeedbackModal()">&times;</span>
+                            </div>
+                            <form id="feedbackForm" onsubmit="saveFeedback(event)">
+                                <div class="form-group">
+                                    <label for="feedbackFullName">Full Name *</label>
+                                    <input type="text" id="feedbackFullName" required placeholder="Enter your full name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="feedbackEmail">Gmail/Email *</label>
+                                    <input type="email" id="feedbackEmail" required placeholder="your.email@gmail.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="feedbackMessage">Feedback *</label>
+                                    <textarea id="feedbackMessage" required placeholder="Share your feedback, suggestions, or complaints..." rows="5"></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Feedback</button>
+                                    <button type="button" class="btn btn-secondary" onclick="closeFeedbackModal()"><i class="fas fa-times"></i> Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Results Management Tab -->
+                    <div id="resultsTab" class="admin-tab">
+                        <h2>Result Management</h2>
+                        <div class="admin-actions">
+                            <button class="btn btn-primary" onclick="showResultUploadForm()"><i class="fas fa-upload"></i> Upload Results</button>
+                        </div>
+
+                        <div id="resultUploadForm" class="form-container" style="display:none;">
+                            <h3>Upload Student Results</h3>
+                            <form onsubmit="uploadResults(event)">
+                                <select id="resultStudentSelect" required>
+                                    <option value="">Select Student</option>
+                                </select>
+                                <select id="tierSelect" required>
+                                    <option value="">Select Tier</option>
+                                    <option value="Tier-1">Tier-1</option>
+                                    <option value="Tier-2">Tier-2</option>
+                                </select>
+                                <div id="tierFields"></div>
+                                <button type="submit" class="btn btn-primary">Save Results</button>
+                                <button type="button" class="btn btn-secondary" onclick="cancelResultUpload()">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Tab -->
+                    <div id="analyticsTab" class="admin-tab">
+                        <h2>Analytics & Reports</h2>
+                        <div class="chart-container">
+                            <canvas id="analyticsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Tab -->
+                    <div id="feedbackTab" class="admin-tab">
+                        <h2>Student Feedback</h2>
+                        <div id="feedbackContainer" class="feedback-list"></div>
+                    </div>
+
+                    <!-- Operators Tab -->
+                    <div id="operatorsTab" class="admin-tab">
+                        <h2>Operator Management</h2>
+                        <button class="btn btn-primary" onclick="showAddOperatorForm()"><i class="fas fa-plus"></i> Add Operator</button>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Department</th>
+                                        <th>Active Since</th>
+                                        <th>Records Processed</th>
+                                        <th>Last Login</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="operatorsTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Settings Tab -->
+                    <div id="settingsTab" class="admin-tab">
+                        <h2>System Settings</h2>
+                        <div class="settings-section">
+                            <h3>Change Password</h3>
+                            <form onsubmit="changeAdminPassword(event)">
+                                <input type="password" placeholder="Current Password" id="currentPassword" required>
+                                <input type="password" placeholder="New Password" id="newPassword" required>
+                                <button type="submit" class="btn btn-primary">Change Password</button>
+                            </form>
+                        </div>
+                        <div class="settings-section">
+                            <h3>Data Management</h3>
+                            <button class="btn btn-secondary" onclick="backupData()"><i class="fas fa-download"></i> Backup Data</button>
+                            <button class="btn btn-info" onclick="triggerRestoreUpload()"><i class="fas fa-upload"></i> Restore Data</button>
+                        </div>
+                        <input type="file" id="restoreFile" accept=".json" style="display:none;" onchange="restoreData(event)">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- OPERATOR DASHBOARD -->
+        <section id="operatorDashboard" class="page">
+            <div class="admin-layout">
+                <!-- Sidebar -->
+                <aside class="admin-sidebar">
+                    <div class="sidebar-header">
+                        <h3>Operator Menu</h3>
+                    </div>
+                    <ul class="admin-menu">
+                        <li><a href="#" onclick="switchOperatorTab('overview')" class="menu-item active"><i class="fas fa-chart-line"></i> Overview</a></li>
+                        <li><a href="#" onclick="switchOperatorTab('students')" class="menu-item"><i class="fas fa-users"></i> View Students</a></li>
+                        <li><a href="#" onclick="switchOperatorTab('results')" class="menu-item"><i class="fas fa-file-alt"></i> Upload Results</a></li>
+                        <li><a href="#" onclick="switchOperatorTab('analytics')" class="menu-item"><i class="fas fa-chart-bar"></i> Analytics (Read-Only)</a></li>
+                        <li><a href="#" onclick="switchOperatorTab('feedback')" class="menu-item"><i class="fas fa-comments"></i> Feedback</a></li>
+                    </ul>
+                </aside>
+
+                <!-- Main Content -->
+                <div class="admin-content">
+                    <!-- Overview Tab -->
+                    <div id="operatorOverviewTab" class="admin-tab active">
+                        <h2>Operator Dashboard</h2>
+                        <div class="stats-grid">
+                            <div class="stat-card-admin">
+                                <h4>Total Students</h4>
+                                <p id="opTotalStudents">0</p>
+                            </div>
+                            <div class="stat-card-admin">
+                                <h4>Results Entered</h4>
+                                <p id="opResultsEntered">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Students Tab -->
+                    <div id="operatorStudentsTab" class="admin-tab">
+                        <h2>Student Records</h2>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Roll Number</th>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Exam</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="opStudentsTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Results Tab -->
+                    <div id="operatorResultsTab" class="admin-tab">
+                        <h2>Upload Results</h2>
+                        <div class="admin-actions">
+                            <button class="btn btn-primary" onclick="showOpResultUploadForm()"><i class="fas fa-upload"></i> Upload Results</button>
+                        </div>
+
+                        <div id="opResultUploadForm" class="form-container" style="display:none;">
+                            <h3>Enter Student Results</h3>
+                            <form onsubmit="opUploadResults(event)">
+                                <select id="opResultStudentSelect" required>
+                                    <option value="">Select Student</option>
+                                </select>
+                                <select id="opTierSelect" required onchange="updateTierFields()">
+                                    <option value="">Select Tier</option>
+                                    <option value="Tier-1">Tier-1</option>
+                                    <option value="Tier-2">Tier-2</option>
+                                </select>
+                                <div id="opTierFields"></div>
+                                <button type="submit" class="btn btn-primary">Save Results</button>
+                                <button type="button" class="btn btn-secondary" onclick="cancelOpResultUpload()">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Tab -->
+                    <div id="operatorAnalyticsTab" class="admin-tab">
+                        <h2>Analytics (Read-Only)</h2>
+                        <div class="chart-container">
+                            <canvas id="opAnalyticsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Tab -->
+                    <div id="operatorFeedbackTab" class="admin-tab">
+                        <h2>Student Feedback</h2>
+                        <div id="operatorFeedbackContainer" class="feedback-list"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>About Us</h4>
+                <p>SSC Exam Result Analysis Portal provides comprehensive tools for managing and analyzing SSC examination results for students across India.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#" onclick="navigateTo('home')">Home</a></li>
+                    <li><a href="#" onclick="navigateTo('survey')">Exam Survey</a></li>
+                    <li><a href="#" onclick="navigateTo('requirements')">Requirements</a></li>
+                    <li><a href="#" onclick="navigateTo('papers')">Papers</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>Email: mahesh21700@gmail.com</p>
+                <p>Support: 9 AM - 6 PM (Mon-Fri)</p>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Send Feedback</h4>
+                <button class="btn btn-primary" onclick="showFeedbackForm()" style="width: 100%;"><i class="fas fa-comment"></i> Give Feedback</button>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 SSC Exam Result Analysis Portal. All rights reserved.</p>
+            <p>Developed with <i class="fas fa-heart" style="color:#ff6b6b;"></i> by Mahesh SK , vivek pratap si</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
